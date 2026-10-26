@@ -1,0 +1,224 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\title{A Single Causal Speed on Irregular Graphs:\\
+Synthetic Defects, Symmetric Ground States, and Real Disorder}
+
+\author{Paul William Jarvis \\
+Independent Researcher, UK \\
+ORCID: 0009-0009-8933-857X \\
+\texttt{mrpaulwjarvis@gmail.com}}
+
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The Lieb-Robinson bound guarantees a finite propagation speed for local quantum lattice systems, and extensions of the original result to general, non-regular graphs \cite{NachtergaeleSims2006,NachtergaeleSims2007,NOS2006} guarantee that this finite speed survives departures from a regular lattice. Neither result guarantees something stronger that most physical reasoning implicitly assumes: that a \emph{single, sharply-defined} speed, not just a finite one, characterizes the causal front. This paper tests that stronger claim numerically, by exact diagonalization of the spin-1/2 Heisenberg model on graphs ranging from the regular ring to several kinds of engineered and physically-motivated irregularity, using the same real-time local-defect quench protocol used to establish the ring's own ballistic front \cite{Cheneau2012}. Three regimes are found, forming a spectrum rather than a binary outcome. (1) A single hand-constructed asymmetric defect (one ring edge rewired) is the worst case: it cuts the quality of a single-speed fit from the ring's own $R^2\approx0.97$-$0.98$ to $R^2\approx0.41$-$0.50$ in a near-immediate cliff (already present at exactly one changed edge), a result confirmed flat across $N=10$-$18$ with proper statistics (180 independent fits), ruling out finite-size artifacts. (2) A graph whose connectivity is set directly by a real ground state's own mutual information (thresholding the critical Heisenberg chain's exact mutual-information matrix) is \emph{not} fragile at all: translational symmetry forces every same-distance pair to carry identical mutual information, so thresholding can only ever add or remove whole symmetric distance-shells, never a single asymmetric defect; the resulting denser-but-still-regular graph gives $R^2=0.85$-$1.00$ at every $N$, with every tested starting vertex giving numerically identical results. (3) Breaking that symmetry for real, with an i.i.d.\ random on-site field (a minimal disorder model), produces genuine non-shell irregularity and a third, intermediate outcome: $R^2=0.66$-$0.80$, flat across $N=10$-$18$, worse than the clean symmetric case but far better preserved than the engineered worst case. The mechanism is directly visible in how fit quality depends on the amount of induced irregularity: the engineered single-defect case drops almost all the way to its floor in one step, while the disorder-driven case degrades smoothly and gradually with how many extra edges the disorder actually produces. The overall picture is that a single Lieb-Robinson-like speed is not an all-or-nothing property of a graph: it survives intact under a graph's own symmetry, degrades gracefully under realistic, distributed disorder, and only truly fails under a concentrated, engineered defect.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+The Lieb-Robinson bound \cite{LiebRobinson1972} shows that information and correlations in a local quantum lattice system spread no faster than an effective finite speed, the quantum analogue of a speed-of-light limit, even though non-relativistic quantum mechanics has no such limit built into its equations of motion. The original bound and its sharpened descendants \cite{NOS2006,NachtergaeleSims2006} were derived for regular lattices, but the mathematical machinery generalizes: Lieb-Robinson-type bounds have been proven for general, non-translationally-invariant graphs of bounded degree, with no assumption of an underlying regular lattice structure at all \cite{NachtergaeleSims2007}.
+
+This generalization guarantees that \emph{a} finite propagation speed exists on an irregular graph. It does not by itself guarantee that \emph{a single, sharply-defined} speed describes the causal front the way it does on a regular lattice, where a real-time quench produces a clean, ballistic, linear relationship between graph distance and arrival time \cite{Cheneau2012}. On an irregular graph, different starting points, different local neighbourhoods, and different notions of distance could in principle each see a different effective speed, so that no single number meaningfully characterizes the system's causal structure at all, even though a finite upper bound on propagation still formally exists.
+
+This paper asks, numerically, how badly and under what conditions that stronger, single-speed picture actually breaks down. Three qualitatively different sources of graph irregularity are tested on the same underlying model (the critical spin-1/2 Heisenberg chain) and the same quench-based measurement protocol: an engineered worst-case single defect, the graph structure implied directly by a real, translationally-symmetric ground state's own correlations, and the graph structure implied by a real ground state once translational symmetry is explicitly broken by disorder. The result is not a single verdict but a spectrum: the single-speed picture is exactly as fragile as the specific kind and amount of irregularity actually present, and the three cases tested here span nearly the full range from essentially undamaged to badly broken.
+
+Section~\ref{sec:methods} describes the model, the quench protocol, and the three graph constructions. Section~\ref{sec:ring} establishes the regular-ring baseline. Section~\ref{sec:defect} presents the engineered single-defect result. Section~\ref{sec:symmetric} presents the real, symmetric ground-state graph result. Section~\ref{sec:disorder} presents the disordered ground-state graph result. Section~\ref{sec:discussion} synthesizes the three results and discusses the mechanism behind the difference between a cliff and a graceful decline. Section~\ref{sec:limitations} states open questions plainly.
+
+\section{Model and Methods}
+\label{sec:methods}
+
+\subsection{Hamiltonian}
+
+All results use the spin-1/2 antiferromagnetic Heisenberg model on a graph $G=(V,E)$ with $N=|V|$ sites,
+\[
+H = \sum_{(i,j)\in E} \left(S^x_i S^x_j + S^y_i S^y_j + S^z_i S^z_j\right),
+\]
+with genuine, complex $2\times2$ Pauli operators (eigenvalues $\pm1$) at every site, exact diagonalization, and the full $2^N$ Hilbert space (no symmetry sector restriction, since the quench dynamics below does not conserve total $S^z$ once the graph is irregular). $E$ is the ring's $N$ edges for the regular control, and one of three irregular edge sets described below for the main results. System sizes $N=10$ to $18$ are used throughout (dimension $2^{18}=262144$); $N=20$ was attempted and abandoned as too expensive for the statistics it would add at this stage.
+
+\subsection{Quench protocol and speed extraction}
+
+The causal front is measured directly, not inferred from a static distance function, using the same real-time local-defect quench trick used for quantum gas microscope experiments on regular lattices \cite{Cheneau2012}: two exact time evolutions are run from nearby computational-basis product states, one a fixed reference bitstring (all-zero), one with a single additional bit flipped at a chosen site $i_0$. Taking the difference of the local $\langle S^z_j(t)\rangle$ signal between the two trajectories cancels the shared background and isolates the causal signal sourced purely by the single flipped bit at $i_0$. No bipartite (N\'eel) reference ordering is required or used; the differencing trick only requires both trajectories to start from nearby computational-basis states, and an all-zero reference works identically to a N\'eel one for this purpose since no irregular graph generally admits a 2-colouring in the first place.
+
+For each site $j\neq i_0$, an arrival time $t_{\rm arrival}(j)$ is extracted from the time series $|\Delta\langle S^z_j(t)\rangle|$ by two independent, cross-validated definitions: a fixed absolute threshold ($10^{-4}$, $10^{-5}$, $10^{-6}$, checked for consistency with each other) and a scale-invariant half-maximum-of-own-peak definition. The graph distance $r(j)$ from $i_0$ is the ordinary breadth-first-search shortest-path distance on $G$ (not a ring hop-count once $G$ is irregular). A single characteristic speed is then extracted per graph instance and starting vertex by an ordinary least-squares fit of $r=v\,t_{\rm arrival}+c$, with the fit quality $R^2$ serving as the paper's primary diagnostic: $R^2$ near 1 means a single speed describes the front well; $R^2$ well below 1 means it does not. All $R^2$ values quoted in the main text use the $10^{-4}$ threshold-arrival definition unless stated otherwise; the half-maximum definition is noisier at these system sizes even for the regular ring and is used only as a secondary cross-check, never as independent evidence of extra fragility where the two disagree.
+
+\subsection{Three graph constructions}
+
+\textbf{Engineered single defect.} Starting from the ring, one edge $(u,u+1)$ is removed and a new edge from $u$ to a uniformly random non-adjacent vertex is added (a single half-edge rewiring, the same elementary move Watts-Strogatz rewiring uses \cite{WattsStrogatz1998}). This changes exactly one edge from the ring, by construction, giving every realization the same asymmetric defect structure (one degree-1 vertex, one degree-3 vertex, the rest degree 2) without relying on a random process to land on a particular disruption level by chance.
+
+\textbf{Symmetric real ground-state graph.} The exact mutual information matrix $I_{ij}=S(\rho_i)+S(\rho_j)-S(\rho_{ij})$ is computed from the full many-body ground state of the critical (uniform-$J$) Heisenberg chain on a ring, and thresholded, $A_{ij}=\mathbb{1}[I_{ij}>\theta]$, to define a new graph directly from the ground state's own correlations, with no topology assumed in advance. Because the ground state is translationally invariant, every pair of sites at the same chord distance has exactly identical mutual information, so a threshold can only ever include or exclude a whole distance-shell at once. Thresholding between the 2nd- and 3rd-neighbour mutual-information values gives a graph consisting of the ring plus a complete next-nearest-neighbour shell: denser than the ring (every vertex degree 4) but still perfectly regular (circulant).
+
+\textbf{Disordered real ground-state graph.} The same construction is repeated after adding an i.i.d.\ random on-site field, $H \to H + \sum_i h_i S^z_i$, $h_i\sim\mathrm{Uniform}(-W,W)$, which breaks translational symmetry completely and independently at every site. A scoping scan over $W$ and $\theta$ (reported in Sec.~\ref{sec:disorder}) identified $W=1.0$, $\theta=0.10$ as a window giving a connected, genuinely irregular graph (vertex degree ranging 2 to 4, rather than the clean case's uniform 4) at every tested $N$ and disorder realization.
+
+\section{The Regular Ring: Baseline}
+\label{sec:ring}
+
+On the unmodified ring, the quench protocol recovers a clean ballistic front at every $N$ tested and every choice of starting vertex, as expected (Table~\ref{tab:ring}): $R^2=0.97$-$0.98$, essentially independent of $N$ over the range tested. This confirms the pipeline reproduces the known regular-lattice result before any irregularity is introduced.
+
+\begin{table}[h]
+\centering
+\caption{Ring control: mean fit quality across starting vertices and realizations, threshold-arrival metric.}
+\label{tab:ring}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$N$ & mean speed $v$ & mean $R^2$ & $n$ fits \\
+\midrule
+14 & 6.91 & 0.969 & 13 \\
+16 & 6.67 & 0.975 & 13 \\
+18 & 6.34 & 0.980 & 13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{An Engineered Single Defect Is a Cliff, Not a Slope}
+\label{sec:defect}
+
+Introducing a single asymmetric rewired edge collapses fit quality immediately. Pooling every synthetic irregular-graph instance generated in this study (Watts-Strogatz rewirings at several densities, and the dedicated single-rewire construction) and grouping by the number of edges that actually differ from the ring, rather than by the nominal rewiring probability used to generate them (nominal rewiring probability turns out to be a poor predictor of fit quality on its own, since a given probability can realize anywhere from zero to many actually-changed edges), gives a sharp, near-immediate cliff rather than a gradual decline (Table~\ref{tab:cliff}): $R^2$ falls from the ring's own $0.975$ at zero changed edges to $0.414$ at exactly one, with little further systematic decline beyond that.
+
+\begin{table}[h]
+\centering
+\caption{Fit quality vs.\ number of edges actually changed from the ring, pooled across all synthetic irregular-graph instances, threshold-arrival metric.}
+\label{tab:cliff}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+edges changed & mean $R^2$ & $n$ fits \\
+\midrule
+0 & 0.975 & 57 \\
+1 & 0.414 & 31 \\
+2 & 0.212 & 15 \\
+3 & 0.271 & 29 \\
+4 & 0.199 & 14 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A dedicated sweep (the single-rewire construction of Sec.~\ref{sec:methods}, 10 disorder-free realizations per system size, $N=10$ to $18$, 3 starting vertices per realization chosen by degree) was used to test whether this single-defect disruption grows, shrinks, or saturates with system size. It is flat: mean $R^2=0.48, 0.45, 0.49, 0.45, 0.50$ at $N=10,12,14,16,18$ respectively, with no systematic trend across nearly a factor of $2^8$ in Hilbert space dimension. A single asymmetric defect is, as far as these system sizes can show, a size-independent, roughly 50-55\% reduction in fit quality from the ring's near-perfect baseline, triggered already at the smallest possible disruption.
+
+\section{A Real, Symmetric Ground State's MI Graph Is Not Fragile}
+\label{sec:symmetric}
+
+The single-defect result raises an obvious question: does a real physical substrate, rather than a hand-engineered worst case, ever actually produce this kind of defect? The most natural candidate graph, the one whose connectivity is set directly by a real ground state's own mutual information, turns out to be structurally incapable of it. Translational symmetry forces every same-chord-distance pair to carry identical mutual information (confirmed directly: nearest-neighbour mutual information varies by less than $10^{-3}$ across all $N$ sites at $N=12$-$18$), so thresholding the mutual-information matrix can only ever add or remove a whole distance-shell at once, never a single asymmetric pair.
+
+The resulting graph (ring plus a complete next-nearest-neighbour shell, thresholding between the 2nd- and 3rd-neighbour mutual information values) is denser than the ring but remains perfectly regular. Running the quench protocol from several explicitly different starting vertices at each $N$ (a direct symmetry check, not a statistical sample, since the graph itself is deterministic once $N$ is fixed) confirms the prediction: every starting vertex gives numerically identical $R^2$ to three decimal places, and fit quality stays high at every $N$ (Table~\ref{tab:symmetric}), comparable to the ring's own baseline and nothing like the single-defect collapse.
+
+\begin{table}[h]
+\centering
+\caption{Symmetric real-ground-state graph (ring + next-nearest-neighbour shell), threshold-arrival metric. Every starting vertex at a given $N$ gives the identical value shown.}
+\label{tab:symmetric}
+\begin{tabular}{@{}lc@{}}
+\toprule
+$N$ & $R^2$ \\
+\midrule
+10 & 1.000 \\
+12 & 0.960 \\
+14 & 0.850 \\
+16 & 0.886 \\
+18 & 0.903 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+(A control attempt on the gapped, dimerized chain found its mutual-information graph \emph{disconnected} at every reasonable threshold: the strong intra-dimer bonds survive thresholding but the weak inter-dimer bonds do not, splitting the chain into isolated pairs. This is a distinct negative result about the graph-construction prescription itself in the gapped phase, not pursued further here since a disconnected graph has no well-defined arrival times to extract a speed from in the first place.)
+
+\section{Real Disorder Is a Graceful, Intermediate Case}
+\label{sec:disorder}
+
+The symmetric result leaves one gap open: translational symmetry is itself the reason the clean ground state cannot produce the dangerous kind of defect, but most real substrates are not perfectly translationally symmetric. Breaking that symmetry explicitly, with an i.i.d.\ random on-site field $h_i\sim\mathrm{Uniform}(-W,W)$ added to the same critical chain Hamiltonian, does produce genuine non-shell irregularity, and tests the single-speed picture against a disorder mechanism that is itself a standard and physically well-motivated one.
+
+A scoping scan over disorder strength $W\in\{0.5,1,2,4\}$ and threshold $\theta$ found two failure modes bracketing a useful window: weak disorder ($W=0.5$) barely perturbs the mutual-information values enough to change any edge at a sensible threshold, recovering the plain ring; strong disorder ($W\geq2$) mostly \emph{disconnects} the thresholded graph, the same qualitative failure already found for the gapped chain in Sec.~\ref{sec:symmetric}. One reliable window, $W=1.0$, $\theta=0.10$, was found connected at every tested $N\in\{10,12,14,16,18\}$ and every disorder realization tried, with real, non-shell degree variation (2 to 4, rather than the clean case's uniform 4).
+
+A full sweep (10 independent disorder realizations per $N$, 3 starting vertices per realization chosen by degree, $N=10$-$18$) gives a third, genuinely intermediate result (Table~\ref{tab:disorder}): mean $R^2=0.66$-$0.80$, flat across $N$, clearly worse than the symmetric case's $0.85$-$1.00$, but clearly better preserved than the engineered single defect's $0.41$-$0.50$.
+
+\begin{table}[h]
+\centering
+\caption{Disordered real-ground-state graph, $W=1.0$, $\theta=0.10$, threshold-arrival metric, mean over 10 disorder realizations $\times$ up to 3 starting vertices per realization.}
+\label{tab:disorder}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$N$ & mean $R^2$ & median $R^2$ & fraction $R^2>0.8$ \\
+\midrule
+10 & 0.655 & 0.681 & 0.37 \\
+12 & 0.746 & 0.872 & 0.57 \\
+14 & 0.735 & 0.777 & 0.43 \\
+16 & 0.795 & 0.840 & 0.73 \\
+18 & 0.767 & 0.839 & 0.57 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The mechanism behind this intermediate outcome is visible directly in how fit quality depends on the amount of disorder-induced irregularity actually realized in a given instance (Table~\ref{tab:disorder-mech}), measured as the number of edges added beyond the ring's own $N$ (disorder at this window only ever adds edges; it never removes a ring edge, since nearest-neighbour mutual information stays well above threshold even at $W=1.0$). Unlike the engineered defect's cliff (Sec.~\ref{sec:defect}, Table~\ref{tab:cliff}), this decline is smooth and gradual: from $0.97$ at zero extra edges (disorder too weak in that particular realization to change connectivity at all) down to roughly $0.6$ at 9-11 extra edges, with no single step producing most of the loss.
+
+\begin{table}[h]
+\centering
+\caption{Disordered graph: fit quality vs.\ number of edges added beyond the ring, pooled across all $N$, threshold-arrival metric.}
+\label{tab:disorder-mech}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+extra edges & mean $R^2$ & $n$ fits \\
+\midrule
+0 & 0.968 & 9 \\
+1 & 0.776 & 12 \\
+4 & 0.773 & 15 \\
+5 & 0.694 & 30 \\
+7 & 0.754 & 6 \\
+9 & 0.594 & 21 \\
+11 & 0.615 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+\label{sec:discussion}
+
+The three results together describe a spectrum, not a binary outcome. A single engineered worst-case defect concentrates all of its disruption into one site, producing a near-step-function loss of fit quality the instant that single change is introduced, and no further systematic damage as more such defects accumulate. Real disorder, by contrast, distributes a comparable total amount of connectivity change across many sites, each perturbed only slightly, and the loss of fit quality tracks that total amount smoothly rather than stepwise. A perfectly symmetric real ground state sits at the undamaged end of the same spectrum for a structural reason, not a numerical coincidence: translational symmetry forbids the kind of single, isolated, asymmetric change that drives the worst case, restricting any threshold-based construction from such a state to whole, still-regular shells.
+
+This resolves the question posed in Sec.~\ref{sec:intro} with a qualified answer. A single Lieb-Robinson-like speed is not simply present or absent on an irregular graph; its fate depends on how concentrated the irregularity is, not merely on whether the graph departs from regularity at all. The existing general-graph Lieb-Robinson bounds \cite{NachtergaeleSims2007} guarantee a finite propagation speed survives on any bounded-degree graph; these results show that the much stronger, practically important question, whether a \emph{single}, sharply-defined speed survives, is graph-dependent in a way that tracks the concentration of irregularity, with symmetric and realistically disordered cases both sitting far closer to the regular-lattice result than an adversarially engineered graph does.
+
+\section{Limitations and Open Questions}
+\label{sec:limitations}
+
+All results use exact diagonalization and are limited to $N\leq18$ (dimension $2^{18}$); $N=20$ was attempted and abandoned as too computationally expensive for the statistics it would add. While every result reported here that was tested for $N$-dependence (the single-defect sweep, Sec.~\ref{sec:defect}; the disordered sweep, Sec.~\ref{sec:disorder}) showed no systematic trend across the full $N=10$-$18$ range tested, this is not a substitute for an analytic or genuinely large-$N$ result, and it remains possible that qualitatively new behaviour appears beyond the sizes reached here.
+
+The gapped/dimerized chain's mutual-information graph was found disconnected at every threshold tried (Sec.~\ref{sec:symmetric}); whether a different observable, or a different graph-construction rule entirely, would give a connected and testable graph for the gapped phase is left open.
+
+Only one disorder model (an i.i.d.\ uniform random on-site field, at one fixed strength $W=1.0$ after a scoping scan) was tested in Sec.~\ref{sec:disorder}. A systematic scan over disorder strength, to find where, if anywhere, the graceful decline found here turns into or merges with the engineered defect's cliff, is a natural extension not attempted here. Other disorder types (random couplings rather than random fields, correlated rather than i.i.d.\ disorder, or non-equilibrium rather than ground-state preparations) were not tested and could in principle behave differently.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+A single, well-defined causal speed on an irregular graph is not an all-or-nothing property. It survives essentially intact when the graph's irregularity is itself a consequence of an underlying symmetry (a real, translationally-invariant ground state's own mutual-information graph), degrades gracefully and predictably with the amount of genuine, physically-motivated disorder present, and only collapses sharply under a concentrated, adversarially engineered single defect. The general mathematical guarantee that \emph{some} finite propagation speed exists on any bounded-degree graph is not in question; what this paper adds is numerical evidence for exactly how, and under what conditions, the much stronger claim that a \emph{single} speed meaningfully describes that propagation actually holds up.
+
+\begin{thebibliography}{9}
+
+\bibitem{LiebRobinson1972}
+E.~H.~Lieb and D.~W.~Robinson, ``The finite group velocity of quantum spin systems,'' Commun.\ Math.\ Phys.\ \textbf{28}, 251 (1972).
+
+\bibitem{NOS2006}
+B.~Nachtergaele, Y.~Ogata, and R.~Sims, ``Propagation of Correlations in Quantum Lattice Systems,'' J.\ Stat.\ Phys.\ \textbf{124}, 1 (2006).
+
+\bibitem{NachtergaeleSims2006}
+B.~Nachtergaele and R.~Sims, ``Lieb-Robinson Bounds and the Exponential Clustering Theorem,'' Commun.\ Math.\ Phys.\ \textbf{265}, 119 (2006).
+
+\bibitem{NachtergaeleSims2007}
+B.~Nachtergaele and R.~Sims, ``Locality Estimates for Quantum Spin Systems,'' arXiv:0712.3318 (2007).
+
+\bibitem{Cheneau2012}
+M.~Cheneau, P.~Barmettler, D.~Poletti, M.~Endres, P.~Schauss, T.~Fukuhara, C.~Gross, I.~Bloch, C.~Kollath, and S.~Kuhr, ``Light-cone-like spreading of correlations in a quantum many-body system,'' Nature \textbf{481}, 484 (2012).
+
+\bibitem{WattsStrogatz1998}
+D.~J.~Watts and S.~H.~Strogatz, ``Collective dynamics of `small-world' networks,'' Nature \textbf{393}, 440 (1998).
+
+\end{thebibliography}
+
+\end{document}
