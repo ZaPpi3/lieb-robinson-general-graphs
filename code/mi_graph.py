@@ -53,7 +53,7 @@ def build_heisenberg_disordered(N, W, seed):
     uniform J=1 ring coupling, h_i ~ Uniform(-W, W) i.i.d. per site. Unlike
     build_heisenberg_dimerized's staggered J_i (which still has a 2-site
     translation symmetry), a per-site random field breaks translational
-    symmetry completely and independently at every site -- the real test
+    symmetry completely and independently at every site: the real test
     of whether a genuinely asymmetric MI structure (not just a shell
     pattern) ever shows up in a real ground state."""
     rng = np.random.default_rng(seed)
@@ -102,7 +102,7 @@ def mi_matrix(psi, N):
 
 def mi_threshold_graph(I, threshold):
     """Graph with an edge (i,j) iff I[i,j] > threshold. No topology
-    assumed in advance -- whatever structure results is whatever the
+    assumed in advance: whatever structure results is whatever the
     ground state's own correlations actually produce."""
     N = I.shape[0]
     g = nx.Graph()
@@ -134,3 +134,24 @@ if __name__ == "__main__":
                 extra = g.number_of_edges() - N  # edges beyond a ring's N
                 print(f"    thresh={thresh:5.2f}  n_edges={g.number_of_edges():3d}  "
                       f"connected={connected!s:5s}  diam={diam}  extra_vs_ring={extra}")
+
+
+def mi_knn_graph(I, k):
+    """Graph with an edge (i,j) iff j is among i's k strongest MI
+    partners OR i is among j's k strongest MI partners (standard
+    symmetric k-nearest-neighbour graph construction from manifold
+    learning). Guarantees minimum degree k by construction, unlike a
+    global threshold, which is exactly the property a global threshold
+    lacks when the MI distribution has a large gap after the single
+    strongest bond per site but near-degenerate values below it (the
+    gapped/dimerized chain's own case, NOTES.md 2026-10-26)."""
+    N = I.shape[0]
+    g = nx.Graph()
+    g.add_nodes_from(range(N))
+    for i in range(N):
+        row = I[i, :].copy()
+        row[i] = -np.inf
+        top_k = np.argsort(-row)[:k]
+        for j in top_k:
+            g.add_edge(i, int(j))
+    return g

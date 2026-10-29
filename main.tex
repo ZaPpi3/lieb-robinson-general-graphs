@@ -129,7 +129,24 @@ $N$ & $R^2$ \\
 \end{tabular}
 \end{table}
 
-(A control attempt on the gapped, dimerized chain found its mutual-information graph \emph{disconnected} at every reasonable threshold: the strong intra-dimer bonds survive thresholding but the weak inter-dimer bonds do not, splitting the chain into isolated pairs. This is a distinct negative result about the graph-construction prescription itself in the gapped phase, not pursued further here since a disconnected graph has no well-defined arrival times to extract a speed from in the first place.)
+A control attempt on the gapped, dimerized chain initially found its mutual-information graph \emph{disconnected} at every reasonable global threshold: the strong intra-dimer bonds survive thresholding but the weak inter-dimer bonds do not, splitting the chain into isolated pairs, with no numeric gap anywhere between "only the dimer bonds" and "essentially every pair at once." This is a problem with a global threshold specifically, not with the gapped state's own structure: a symmetric $k$-nearest-neighbour construction (an edge $(i,j)$ whenever $j$ is among $i$'s $k$ strongest mutual-information partners or vice versa, the standard manifold-learning fix for exactly this failure mode, since it guarantees minimum degree $k$ without requiring any gap in the underlying value distribution) gives a connected, perfectly regular graph at $k=3$ (the ring plus one extra edge per dimer) and $k=5$ (denser still), both confirmed regular directly by construction before any quench compute was spent on them.\footnote{One ill-posed intermediate case is worth recording: $k=4$ initially appeared to give the first genuinely asymmetric real-ground-state graph in this study (degree 4 at most sites, degree 5 at a few), but this was traced to two sites tied in mutual information to machine precision, a real consequence of the chain's own residual 2-site translational symmetry, with $k=4$ arbitrarily cutting through that tie. Checking $k=5$ and $k=6$, both of which restore exact regularity, confirmed the $k=4$ asymmetry was an artifact of where the cut fell, not a genuine property of the state; it is excluded from the results reported here.} Running the quench protocol on both, $N=10$-$18$, again gives identical $R^2$ from every starting vertex at each $(N,k)$ (Table~\ref{tab:gapped}), and the result stays in the same robust range as the critical chain's own symmetric graph, not the single-defect cliff: the chain's residual translational symmetry still rules out an isolated asymmetric defect, now confirmed under a different graph-construction rule as well as a different phase.
+
+\begin{table}[h]
+\centering
+\caption{Gapped/dimerized chain, $k$-nearest-neighbour MI graph, threshold-arrival metric. Every starting vertex at a given $(N,k)$ gives the identical value shown.}
+\label{tab:gapped}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+$N$ & $R^2$ ($k=3$) & $R^2$ ($k=5$) \\
+\midrule
+10 & 0.950 & 1.000 \\
+12 & 0.969 & 1.000 \\
+14 & 0.794 & 0.751 \\
+16 & 0.915 & 0.862 \\
+18 & 0.890 & 0.897 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Real Disorder Is a Graceful, Intermediate Case}
 \label{sec:disorder}
@@ -190,7 +207,7 @@ This resolves the question posed in Sec.~\ref{sec:intro} with a qualified answer
 
 All results use exact diagonalization and are limited to $N\leq18$ (dimension $2^{18}$); $N=20$ was attempted and abandoned as too computationally expensive for the statistics it would add. While every result reported here that was tested for $N$-dependence (the single-defect sweep, Sec.~\ref{sec:defect}; the disordered sweep, Sec.~\ref{sec:disorder}) showed no systematic trend across the full $N=10$-$18$ range tested, this is not a substitute for an analytic or genuinely large-$N$ result, and it remains possible that qualitatively new behaviour appears beyond the sizes reached here.
 
-The gapped/dimerized chain's mutual-information graph was found disconnected at every threshold tried (Sec.~\ref{sec:symmetric}); whether a different observable, or a different graph-construction rule entirely, would give a connected and testable graph for the gapped phase is left open.
+The gapped/dimerized chain's mutual-information graph is disconnected under a global threshold at every value tried (Sec.~\ref{sec:symmetric}); a $k$-nearest-neighbour construction resolves this, giving connected, regular graphs ($k=3$ and $k=5$) that stay in the same robust range as the critical chain's own symmetric graph. Only two $k$ values were tested in this way; a broader scan, and a check of whether this result is specific to the particular dimerization strength used ($\delta=0.5$) or holds across the gapped phase generally, remains open.
 
 Only one disorder model (an i.i.d.\ uniform random on-site field, at one fixed strength $W=1.0$ after a scoping scan) was tested in Sec.~\ref{sec:disorder}. A systematic scan over disorder strength, to find where, if anywhere, the graceful decline found here turns into or merges with the engineered defect's cliff, is a natural extension not attempted here. Other disorder types (random couplings rather than random fields, correlated rather than i.i.d.\ disorder, or non-equilibrium rather than ground-state preparations) were not tested and could in principle behave differently.
 
